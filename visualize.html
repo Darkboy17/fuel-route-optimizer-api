@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Route Visualization</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    #map {
+      height: 100vh;
+      width: 100%;
+    }
+
+    #controls {
+      position: absolute;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      background: white;
+      padding: 12px;
+      border-radius: 8px;
+      display: flex;
+      gap: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    }
+
+    #controls input {
+      padding: 8px;
+      width: 220px;
+    }
+
+    #controls button {
+      padding: 8px 12px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    #loading {
+      position: absolute;
+      top: 96px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 999;
+      background: white;
+      padding: 10px 16px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="controls">
+    <input id="startInput" placeholder="Start: New York, NY" />
+    <input id="finishInput" placeholder="Finish: Los Angeles, CA" />
+    <button onclick="searchRoute()">Search for Stations</button>
+  </div>
+
+  <div id="loading"></div>
+  <div id="map"></div>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+  <script>
+    const API_URL = "http://127.0.0.1:8000/api/route-fuel/";
+
+    const map = L.map("map").setView([39.8283, -98.5795], 4);
+
+    let routeLayer = null;
+    let summaryControl = null;
+    let markers = [];
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: "&copy; OpenStreetMap contributors"
+    }).addTo(map);
+
+    const greenIcon = new L.Icon({
+      iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png",
+      shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowSize: [41, 41]
+    });
+
+    const redIcon = new L.Icon({
+      iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png",
+      shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowSize: [41, 41]
+    });
+
+    async function parseLocationInput(value) {
+      value = value.trim();
+
+      // Accept coordinate input like: [-122.3321, 47.6062]
+      if (value.startsWith("[") && value.endsWith("]")) {
+        const coordinates = JSON.parse(value);
+
+        if (
+          !Array.isArray(coordinates) ||
+          coordinates.length !== 2 ||
+          typeof coordinates[0] !== "number" ||
+          typeof coordinates[1] !== "number"
+        ) {
+          throw new Error("Coordinates must be in [lon, lat] format.");
+        }
+
+        return coordinates;
+      }
+
+      // Otherwise treat input as city/location text
+      const url = `https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=us&q=${encodeURIComponent(value)}`;
+
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if (!data.length) {
+        throw new Error(`Could not find location: ${value}`);
+      }
+
+      return [Number(data[0].lon), Number(data[0].lat)];
+    }
+
+    async function fetchRouteData(start, finish) {
+      const response = await fetch(API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          start,
+          finish
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to fetch route data");
+      }
+
+      return data;
+    }
+
+    function clearMap() {
+      if (routeLayer) {
+        map.removeLayer(routeLayer);
+        routeLayer = null;
+      }
+
+      if (summaryControl) {
+        map.removeControl(summaryControl);
+        summaryControl = null;
+      }
+
+      markers.forEach(marker => map.removeLayer(marker));
+      markers = [];
+    }
+
+    function drawRoute(routeMap) {
+      routeLayer = L.geoJSON(routeMap, {
+        style: {
+          color: "blue",
+          weight: 5,
+          opacity: 0.5
+        }
+      }).addTo(map);
+
+      map.fitBounds(routeLayer.getBounds());
+    }
+
+    function addStartAndFinishMarkers(start, finish, startName, finishName) {
+      const [startLon, startLat] = start;
+      const [finishLon, finishLat] = finish;
+
+      const startMarker = L.marker([startLat, startLon], { icon: greenIcon })
+        .addTo(map)
+        .bindPopup(`<b>Start</b><br>${startName}`);
+
+      const finishMarker = L.marker([finishLat, finishLon], { icon: redIcon })
+        .addTo(map)
+        .bindPopup(`<b>Finish</b><br>${finishName}`);
+
+      markers.push(startMarker, finishMarker);
+    }
+
+    function addFuelStopMarkers(fuelStops) {
+      fuelStops.forEach((stop, index) => {
+        const [lon, lat] = stop.coordinates;
+
+        const marker = L.marker([lat, lon])
+          .addTo(map)
+          .bindPopup(`
+            <b>Fuel Stop ${index + 1}</b><br>
+            ${stop.name}<br>
+            Price: $${Number(stop.price).toFixed(3)} / gallon<br>
+            Route mile: ${stop.route_mile}<br>
+            Distance from route: ${stop.distance_from_route} miles
+          `);
+
+        markers.push(marker);
+      });
+    }
+
+    function showSummary(data) {
+      summaryControl = L.control({ position: "bottomright" });
+
+      summaryControl.onAdd = function () {
+        const div = L.DomUtil.create("div", "summary-box");
+
+        div.style.background = "white";
+        div.style.padding = "16px 20px";
+        div.style.borderRadius = "8px";
+        div.style.boxShadow = "0 2px 8px rgba(0,0,0,0.25)";
+        div.style.lineHeight = "1.5";
+
+        div.innerHTML = `
+          <b>Route Summary</b><br>
+          Distance: ${data.distance_miles} miles<br>
+          Fuel Stops: ${data.fuel_stops.length}<br>
+          Total Cost: $${data.total_fuel_cost}
+        `;
+
+        return div;
+      };
+
+      summaryControl.addTo(map);
+    }
+
+    async function searchRoute() {
+      const startName = document.getElementById("startInput").value.trim();
+      const finishName = document.getElementById("finishInput").value.trim();
+      const loading = document.getElementById("loading");
+
+      if (!startName || !finishName) {
+        loading.innerText = "Please enter both start and finish locations.";
+        return;
+      }
+
+      try {
+        loading.style.display = "block";
+        loading.innerText = "Computing and Optimizing";
+
+        clearMap();
+
+        const start = await parseLocationInput(startName);
+        const finish = await parseLocationInput(finishName);
+
+        const data = await fetchRouteData(start, finish);
+
+        drawRoute(data.route_map);
+        addStartAndFinishMarkers(start, finish, startName, finishName);
+        addFuelStopMarkers(data.fuel_stops);
+        showSummary(data);
+
+        // loading.innerText =
+        //   `Distance: ${data.distance_miles} miles | Stops: ${data.fuel_stops.length} | Cost: $${data.total_fuel_cost}`;
+        loading.innerText = "";
+      } catch (error) {
+        console.error(error);
+        loading.style.color = "red";
+        loading.innerText = error.message;
+      }
+    }
+  </script>
+</body>
+
+</html>

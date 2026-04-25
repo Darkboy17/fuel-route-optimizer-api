@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+.env
+db.sqlite3
+node_modules/
+venv/
+.env.local
+/Spotter AI Assessment Testing Endpoints
+/ors_response_debug.json

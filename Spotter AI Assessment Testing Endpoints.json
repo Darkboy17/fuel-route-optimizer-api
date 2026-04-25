@@ -1,0 +1,171 @@
+{
+  "version": "1",
+  "name": "Spotter AI Assessment Testing Endpoints",
+  "items": [
+    {
+      "name": "Canada Route - Toronto -> Vancouver",
+      "type": "http",
+      "seq": 1,
+      "tags": [],
+      "request": {
+        "method": "post",
+        "url": "",
+        "params": [],
+        "headers": [],
+        "auth": {
+          "mode": "none"
+        },
+        "body": {
+          "mode": "none"
+        },
+        "script": {},
+        "vars": {},
+        "assertions": [],
+        "tests": "",
+        "docs": ""
+      },
+      "settings": {},
+      "filename": "Canada Route - Toronto -- Vancouver.yml",
+      "pathname": "e:/All Software Projects/fuel-route-api/Spotter AI Assessment Testing Endpoints/Canada Route - Toronto -- Vancouver.yml",
+      "draft": null,
+      "partial": true,
+      "loading": false,
+      "size": 0.0003528594970703125,
+      "depth": 1
+    },
+    {
+      "name": "Long Route  - Miami -> Seattle",
+      "type": "http",
+      "seq": 1,
+      "tags": [],
+      "request": {
+        "method": "post",
+        "url": "",
+        "params": [],
+        "headers": [],
+        "auth": {
+          "mode": "none"
+        },
+        "body": {
+          "mode": "none"
+        },
+        "script": {},
+        "vars": {},
+        "assertions": [],
+        "tests": "",
+        "docs": ""
+      },
+      "settings": {},
+      "filename": "Long Route  - Miami -- Seattle.yml",
+      "pathname": "e:/All Software Projects/fuel-route-api/Spotter AI Assessment Testing Endpoints/Long Route  - Miami -- Seattle.yml",
+      "draft": null,
+      "partial": true,
+      "loading": false,
+      "size": 0.0003452301025390625,
+      "depth": 1
+    },
+    {
+      "name": "Medium route - Seattle -> Denver",
+      "type": "http",
+      "seq": 1,
+      "tags": [],
+      "request": {
+        "method": "post",
+        "url": "",
+        "params": [],
+        "headers": [],
+        "auth": {
+          "mode": "none"
+        },
+        "body": {
+          "mode": "none"
+        },
+        "script": {},
+        "vars": {},
+        "assertions": [],
+        "tests": "",
+        "docs": ""
+      },
+      "settings": {},
+      "filename": "Medium route - Seattle -- Denver.yml",
+      "pathname": "e:/All Software Projects/fuel-route-api/Spotter AI Assessment Testing Endpoints/Medium route - Seattle -- Denver.yml",
+      "draft": null,
+      "partial": true,
+      "loading": false,
+      "size": 0.00034999847412109375,
+      "depth": 1
+    },
+    {
+      "name": "Short Route - Los Angeles -> San Diego",
+      "type": "http",
+      "seq": 1,
+      "tags": [],
+      "request": {
+        "method": "post",
+        "url": "",
+        "params": [],
+        "headers": [],
+        "auth": {
+          "mode": "none"
+        },
+        "body": {
+          "mode": "none"
+        },
+        "script": {},
+        "vars": {},
+        "assertions": [],
+        "tests": "",
+        "docs": ""
+      },
+      "settings": {},
+      "filename": "Short Route - Los Angeles -- San Diego.yml",
+      "pathname": "e:/All Software Projects/fuel-route-api/Spotter AI Assessment Testing Endpoints/Short Route - Los Angeles -- San Diego.yml",
+      "draft": null,
+      "partial": true,
+      "loading": false,
+      "size": 0.000354766845703125,
+      "depth": 1
+    }
+  ],
+  "environments": [],
+  "runtimeVariables": {},
+  "brunoConfig": {
+    "opencollection": "1.0.0",
+    "name": "Spotter AI Assessment Testing Endpoints",
+    "type": "collection",
+    "ignore": [
+      "node_modules",
+      ".git"
+    ],
+    "proxy": {
+      "inherit": true,
+      "config": {
+        "protocol": "http",
+        "hostname": "",
+        "port": "",
+        "auth": {
+          "username": "",
+          "password": ""
+        },
+        "bypassProxy": ""
+      }
+    }
+  },
+  "securityConfig": {},
+  "settingsSelectedTab": "overview",
+  "folderLevelSettingsSelectedTab": {},
+  "allTags": [],
+  "format": "yml",
+  "importedAt": 1777147084356,
+  "lastAction": null,
+  "root": {
+    "meta": null,
+    "request": null,
+    "docs": null
+  },
+  "isLoading": false,
+  "globalEnvironmentVariables": {},
+  "globalEnvSecrets": [],
+  "exportedAt": "2026-04-25T19:58:06.040Z",
+  "exportedUsing": "Bruno VS Code Extension"
+}
