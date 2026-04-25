@@ -193,14 +193,14 @@ python manage.py runserver
 If using VS Code, you can use the **Live Server** extension:
 
 ```txt
-Right click visualize.html → Open with Live Server
+Right click visualize.html → Open with Live Server (Show Preview)
 ```
 
 3. Enter locations such as:
 
 ```txt
-Start: Seattle, WA
-Finish: Denver, CO
+Start: [-122.3321, 47.6062]
+Finish: [-104.9903, 39.7392]
 ```
 
 4. Click:
@@ -228,7 +228,7 @@ and display the optimized route and fuel stops on the map.
 ## Performance
 
 -   Local computation: \~100ms--1000ms
--   Total response: \~1--2s
+-   Total response: \~1--4s
 -   Single external API call
 
 ------------------------------------------------------------------------
@@ -237,4 +237,7 @@ and display the optimized route and fuel stops on the map.
 
 -   Fuel optimization uses a greedy strategy
 -   Partial refueling reduces cost over full-tank approach
+
+## Credits
+@Kordor Pyrbot
 
