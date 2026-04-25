@@ -23,7 +23,7 @@ route and then performs local optimization using fuel price data.
 
 ## Tech Stack
 
--   Python 3
+-   Python 3.14
 -   Django / Django REST Framework
 -   OpenRouteService API
 
